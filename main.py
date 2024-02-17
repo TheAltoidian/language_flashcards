@@ -1,8 +1,18 @@
 from tkinter import *
+import pandas as pd
+from random import choice
 
+# -------- Flashcard generator --------
+data = pd.read_csv("./data/french_words.csv")
+flashcard_dict = {row.French: row.English for (index, row) in data.iterrows()}
+
+
+def make_flashcard():
+    f_word, e_word = choice(list(flashcard_dict.items()))
+    canvas.itemconfig(word, text=f_word)
+
+# -------- UI --------
 BACKGROUND_COLOR = "#B1DDC6"
-
-
 
 window = Tk()
 window.title("Flashy")
@@ -20,12 +30,12 @@ word = canvas.create_text(400,263, text="french word", font=("Ariel", 60,"bold")
 
 # Wrong Button
 wrong = PhotoImage(file="./images/wrong.png")
-wrong_button = Button(width=100, height=100, highlightthickness=0, bg=BACKGROUND_COLOR, image=wrong)
+wrong_button = Button(width=100, height=100, highlightthickness=0, bg=BACKGROUND_COLOR, image=wrong, command=make_flashcard)
 wrong_button.grid(column=0, row=1)
 
 # Right Button
 right = PhotoImage(file="./images/right.png")
-right_button = Button(width=100, height=100, highlightthickness=0, bg=BACKGROUND_COLOR, image=right)
+right_button = Button(width=100, height=100, highlightthickness=0, bg=BACKGROUND_COLOR, image=right, command=make_flashcard)
 right_button.grid(column=1, row=1)
 
 
