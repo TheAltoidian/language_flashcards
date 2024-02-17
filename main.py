@@ -1,9 +1,12 @@
 from tkinter import *
-import pandas as pd
+import pandas
 from random import choice
 
 # -------- Flashcard generator --------
-data = pd.read_csv("./data/french_words.csv")
+try:
+    data = pandas.read_csv("./data/words_to_learn.csv")
+except FileNotFoundError:
+    data = pandas.read_csv("./data/french_words.csv")
 flashcard_dict = {row.French: row.English for (index, row) in data.iterrows()}
 current_french_word = "Start"
 current_english_word = "Start"
@@ -26,6 +29,16 @@ def show_answer():
         canvas.itemconfig(card_side, image=card_back)
         canvas.itemconfig(language, text="English", fill="white")
         canvas.itemconfig(word, text=current_english_word, fill="white")
+
+# -------- correct guess, remove card from list --------
+def is_known():
+    if testing_started:
+        del flashcard_dict[current_french_word]
+    make_flashcard()
+    record = pandas.DataFrame(list(flashcard_dict.items()), columns=["French", "English"])
+    print(record)
+    record.to_csv("./data/words_to_learn.csv", index=False)
+
 
 # -------- UI --------
 BACKGROUND_COLOR = "#B1DDC6"
@@ -53,10 +66,8 @@ wrong_button.grid(column=0, row=1)
 
 # Right Button
 right = PhotoImage(file="./images/right.png")
-right_button = Button(width=100, height=100, highlightthickness=0, bg=BACKGROUND_COLOR, image=right, command=make_flashcard)
+right_button = Button(width=100, height=100, highlightthickness=0, bg=BACKGROUND_COLOR, image=right, command=is_known)
 right_button.grid(column=1, row=1)
-
-
 
 
 window.mainloop()
