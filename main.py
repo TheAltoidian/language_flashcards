@@ -5,11 +5,19 @@ from random import choice
 # -------- Flashcard generator --------
 data = pd.read_csv("./data/french_words.csv")
 flashcard_dict = {row.French: row.English for (index, row) in data.iterrows()}
-
-
 def make_flashcard():
+    canvas
     f_word, e_word = choice(list(flashcard_dict.items()))
-    canvas.itemconfig(word, text=f_word)
+    canvas.itemconfig(word, text=f_word, fill="black")
+    canvas.itemconfig(language, text="French", fill="black")
+    canvas.itemconfig(card_side, image=card_front)
+    canvas.after(3000, lambda: show_answer(e_word))
+
+# -------- show answer --------
+def show_answer(e_word):
+    canvas.itemconfig(card_side, image=card_back)
+    canvas.itemconfig(language, text="English", fill="white")
+    canvas.itemconfig(word, text=e_word, fill="white")
 
 # -------- UI --------
 BACKGROUND_COLOR = "#B1DDC6"
