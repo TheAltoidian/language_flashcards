@@ -5,19 +5,27 @@ from random import choice
 # -------- Flashcard generator --------
 data = pd.read_csv("./data/french_words.csv")
 flashcard_dict = {row.French: row.English for (index, row) in data.iterrows()}
+current_french_word = "Start"
+current_english_word = "Start"
+testing_started = False
 def make_flashcard():
-    canvas
-    f_word, e_word = choice(list(flashcard_dict.items()))
-    canvas.itemconfig(word, text=f_word, fill="black")
+    global testing_started, flip_timer
+    testing_started = True
+    window.after_cancel(flip_timer)
+
+    global current_french_word, current_english_word
+    current_french_word, current_english_word = choice(list(flashcard_dict.items()))
+    canvas.itemconfig(word, text=current_french_word, fill="black")
     canvas.itemconfig(language, text="French", fill="black")
     canvas.itemconfig(card_side, image=card_front)
-    canvas.after(3000, lambda: show_answer(e_word))
+    flip_timer = window.after(3000,show_answer)
 
 # -------- show answer --------
-def show_answer(e_word):
-    canvas.itemconfig(card_side, image=card_back)
-    canvas.itemconfig(language, text="English", fill="white")
-    canvas.itemconfig(word, text=e_word, fill="white")
+def show_answer():
+    if testing_started:
+        canvas.itemconfig(card_side, image=card_back)
+        canvas.itemconfig(language, text="English", fill="white")
+        canvas.itemconfig(word, text=current_english_word, fill="white")
 
 # -------- UI --------
 BACKGROUND_COLOR = "#B1DDC6"
@@ -25,6 +33,8 @@ BACKGROUND_COLOR = "#B1DDC6"
 window = Tk()
 window.title("Flashy")
 window.config(padx=50, pady=50,  background=BACKGROUND_COLOR)
+
+flip_timer = window.after(3000, show_answer)
 
 # Flashcard
 canvas = Canvas(width=800, height=526, highlightthickness=0, bg=BACKGROUND_COLOR)
